@@ -1,0 +1,11 @@
+package android.hardware.helloworld@1.0;
+
+interface IHelloworld {
+    init() generates (int32_t result);
+
+    enable(uint32_t onoff) generates (int32_t result);
+
+    read(uint32_t cmd) generates (int32_t result);
+
+    write(uint32_t cmd) generates (int32_t result);
+};
