@@ -1,0 +1,9 @@
+#
+# Misc strange devices
+#
+
+menu "Misc devices"
+
+source "drivers/misc/helloworld/Kconfig"
+
+endmenu

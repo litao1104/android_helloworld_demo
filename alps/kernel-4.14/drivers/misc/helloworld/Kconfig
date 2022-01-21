@@ -1,0 +1,5 @@
+config HELLOWORLD
+	tristate "Helloworld driver"
+	default m
+	help
+	  This is the first android driver.
