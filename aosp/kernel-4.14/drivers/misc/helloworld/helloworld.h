@@ -6,7 +6,7 @@
  * Copyleft (c) 2022-2222 litao1104@gmail.com
  *
  *
- * 版本:		 V1.0
+ * 版本:      V1.0
  * 最后修改： 2022-01-18
  */
 
@@ -19,9 +19,9 @@
 #ifndef _HELLOWORLD_H_
 #define _HELLOWORLD_H_
 
-#define HELLO_EVENT_PRINT_NAME 0x01
-#define HELLO_EVENT_PRINT_AGE	0x02
-#define HELLO_EVENT_PRINT_NUM	0x03
+#define HELLO_EVENT_PRINT_NAME  0x01
+#define HELLO_EVENT_PRINT_AGE   0x02
+#define HELLO_EVENT_PRINT_NUM   0x03
 
 struct hello_event {
 	char name[32];
@@ -30,7 +30,7 @@ struct hello_event {
 };
 
 struct hello_list_data {
-	int helloween;				 //链表节点的数据域
+	int helloween;               //链表节点的数据域
 	struct list_head hello_node; //链表节点的指针域
 };
 
@@ -74,7 +74,7 @@ struct helloworld_data {
 
 	int is_hello_mutex_manual_locked; //用于标记是否已经被手动上互斥锁
 	int hello_kitty; //用于/sys/class/helloworld/helloworld/hello_kitty读写实践，其他一些实践也用到此成员变量。
-	int hello_pl;	 //用于/sys/devices/platform/helloworld/hello_pl读写实践，还有一个路径/sys/bus/platform/devices/helloworld/hello_pl
+	int hello_pl;    //用于/sys/devices/platform/helloworld/hello_pl读写实践，还有一个路径/sys/bus/platform/devices/helloworld/hello_pl
 };
 
 extern int hello_register_client(struct notifier_block *nb);

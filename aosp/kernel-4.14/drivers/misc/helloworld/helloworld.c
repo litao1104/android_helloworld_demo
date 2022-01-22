@@ -6,7 +6,7 @@
  * Copyleft (c) 2022-2222 litao1104@gmail.com
  *
  *
- * 版本:		 V1.0
+ * 版本:  V1.0
  * 创建： 2022-01-18，基于arm64 linux kernel 4.14
  */
 
@@ -40,7 +40,7 @@
 //#define REGISTER_PLATFORM_DEVICE_BUT_NOT_USE_DEVICETREE
 
 #define HELLOWORLD_PROC_FS_NAME  "helloworld"
-#define HELLOWORLD_CLASS_NAME	"helloworld"
+#define HELLOWORLD_CLASS_NAME    "helloworld"
 #define HELLOWORLD_DEVICE_NAME   "helloworld"
 #define HELLOWORLD_CHRDEV_NAME   "helloworld"
 #define HELLOWORLD_MISC_DEV_NAME "helloworld_misc_dev"
@@ -599,7 +599,8 @@ static ssize_t hello_notifier_demo_event_store(struct device* dev, struct device
 		return -EFAULT;
 	}
 
-	ret = hello_notifier_call_chain((unsigned long)val, (void*)&event); //发出事件通知链
+	/* 发出事件通知链, event局部结构体变量的地址将传到hello_demo_notifier_callback函数的data指针 */
+	ret = hello_notifier_call_chain((unsigned long)val, (void*)&event);
 
 	return count;
 }
@@ -749,6 +750,10 @@ static enum hrtimer_restart hello_hrtimer_func(struct hrtimer *timer)
 /* fb亮灭屏事件通知链的回调函数 */
 int hello_fb_notifier_callback(struct notifier_block *nb, unsigned long event, void *data)
 {
+	/*
+	 * container_of，通过hello_fb_notifier成员变量的地址和该成员变量相对于struct helloworld_data首地址的偏移量，
+	 * 就可以算出struct helloworld_data的首地址。
+	 */
 	struct helloworld_data *hello_data = container_of(nb, struct helloworld_data, hello_fb_notifier);
 
 	struct fb_event *evdata = data;
@@ -838,6 +843,10 @@ EXPORT_SYMBOL_GPL(hello_notifier_call_chain);
  */
 int hello_demo_notifier_callback(struct notifier_block *nb, unsigned long event, void *data)
 {
+	/*
+	 * container_of，通过hello_demo_notifier成员变量的地址和该成员变量相对于struct helloworld_data首地址的偏移量，
+	 * 就可以算出struct helloworld_data的首地址。
+	 */
 	struct helloworld_data *hello_data = container_of(nb, struct helloworld_data, hello_demo_notifier);
 
 	struct hello_event *evdata = data;
