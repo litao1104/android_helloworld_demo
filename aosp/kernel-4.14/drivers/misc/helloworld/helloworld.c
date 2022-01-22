@@ -6,7 +6,7 @@
  * Copyleft (c) 2022-2222 litao1104@gmail.com
  *
  *
- * 版本:         V1.0
+ * 版本:		 V1.0
  * 创建： 2022-01-18，基于arm64 linux kernel 4.14
  */
 
@@ -40,7 +40,7 @@
 //#define REGISTER_PLATFORM_DEVICE_BUT_NOT_USE_DEVICETREE
 
 #define HELLOWORLD_PROC_FS_NAME  "helloworld"
-#define HELLOWORLD_CLASS_NAME    "helloworld"
+#define HELLOWORLD_CLASS_NAME	"helloworld"
 #define HELLOWORLD_DEVICE_NAME   "helloworld"
 #define HELLOWORLD_CHRDEV_NAME   "helloworld"
 #define HELLOWORLD_MISC_DEV_NAME "helloworld_misc_dev"
@@ -195,7 +195,7 @@ static DEVICE_ATTR(hello_kitty, S_IRUGO | S_IWUSR, hello_kitty_show, hello_kitty
 static ssize_t hello_list_show(struct device* dev, struct device_attribute* attr, char* buf)
 {
 	struct helloworld_data *data = dev_get_drvdata(dev);
-    struct hello_list_data *node;
+	struct hello_list_data *node;
 
 	ssize_t offset = 0;
 	int ret;
@@ -218,11 +218,11 @@ static ssize_t hello_list_show(struct device* dev, struct device_attribute* attr
 		return -EFAULT;
 	}
 
-    list_for_each_entry(node, &data->hello_list, hello_node) {
-        pr_info("%s: line %d: helloween = %d\n", __func__, __LINE__, node->helloween);
+	list_for_each_entry(node, &data->hello_list, hello_node) {
+		pr_info("%s: line %d: helloween = %d\n", __func__, __LINE__, node->helloween);
 		ret = snprintf(&buf[offset], PAGE_SIZE, "%d\n", node->helloween);
 		offset += ret;
-    }
+	}
 
 	mutex_unlock(&data->hello_mutex_lock);
 
@@ -883,8 +883,8 @@ static struct platform_device helloworld_platform_device = {
  * helloworld_of_match_table变量，用成员compatible字符串匹配dts的，
  * 当dts匹配成功，那么就会调用platform_driver的probe成员，开始执行初始化流程。例如：
  * helloworld:helloworld {
- *     compatible = "litao,helloworld";
- *     status = "okay";
+ *	 compatible = "litao,helloworld";
+ *	 status = "okay";
  * };
  *
  * 通过adb，你会看到/sys/devices/platform/helloworld，helloworld这个设备的名称是由dts中的helloworld:helloworld来决定，
@@ -938,7 +938,7 @@ static int helloworld_platform_probe(struct platform_device *pdev)
 	/* 由内核分配字符设备号 */
 	ret = alloc_chrdev_region(&devno, 0, 1, HELLOWORLD_CHRDEV_NAME);
 	if(ret < 0) {
-	    pr_err("Failed to alloc chrdev!\n");
+		pr_err("Failed to alloc chrdev!\n");
 	}
 
 	/* 根据字符设备号devno，计算出major和minor */
@@ -981,7 +981,7 @@ static int helloworld_platform_probe(struct platform_device *pdev)
 	/* 在/sys/class/helloworld/helloworld/目录下创建hello_kitty属性，也就是文件节点 */
 	ret = device_create_file(data->hello_device, &dev_attr_hello_kitty);
 	if (ret < 0) {
-	    pr_err("Failed to create attribute hello_kitty!\n");
+		pr_err("Failed to create attribute hello_kitty!\n");
 	} else {
 		pr_info("%s: line %d: Device create hello_kitty file success!\n", __func__, __LINE__);
 	}
@@ -992,7 +992,7 @@ static int helloworld_platform_probe(struct platform_device *pdev)
 	/* 在/sys/class/helloworld/helloworld/目录下创建hello_list属性，也就是文件节点 */
 	ret = device_create_file(data->hello_device, &dev_attr_hello_list);
 	if (ret < 0) {
-	    pr_err("Failed to create attribute hello_list!\n");
+		pr_err("Failed to create attribute hello_list!\n");
 	} else {
 		pr_info("%s: line %d: Device create hello_list file success!\n", __func__, __LINE__);
 	}
@@ -1000,7 +1000,7 @@ static int helloworld_platform_probe(struct platform_device *pdev)
 	/* 在/sys/class/helloworld/helloworld/目录下创建hello_mutex_lock属性，也就是文件节点 */
 	ret = device_create_file(data->hello_device, &dev_attr_hello_mutex_lock);
 	if (ret < 0) {
-	    pr_err("Failed to create attribute hello_mutex_lock!\n");
+		pr_err("Failed to create attribute hello_mutex_lock!\n");
 	} else {
 		pr_info("%s: line %d: Device create hello_mutex_lock file success!\n", __func__, __LINE__);
 	}
@@ -1008,7 +1008,7 @@ static int helloworld_platform_probe(struct platform_device *pdev)
 	/* 在/sys/class/helloworld/helloworld/目录下创建hello_schedule_work属性，也就是文件节点 */
 	ret = device_create_file(data->hello_device, &dev_attr_hello_schedule_work);
 	if (ret < 0) {
-	    pr_err("Failed to create attribute hello_schedule_work!\n");
+		pr_err("Failed to create attribute hello_schedule_work!\n");
 	} else {
 		pr_info("%s: line %d: Device create hello_schedule_work file success!\n", __func__, __LINE__);
 	}
@@ -1016,7 +1016,7 @@ static int helloworld_platform_probe(struct platform_device *pdev)
 	/* 在/sys/class/helloworld/helloworld/目录下创建hello_schedule_delayed_work属性，也就是文件节点 */
 	ret = device_create_file(data->hello_device, &dev_attr_hello_schedule_delayed_work);
 	if (ret < 0) {
-	    pr_err("Failed to create attribute hello_schedule_delayed_work!\n");
+		pr_err("Failed to create attribute hello_schedule_delayed_work!\n");
 	} else {
 		pr_info("%s: line %d: Device create hello_schedule_delayed_work file success!\n", __func__, __LINE__);
 	}
@@ -1024,7 +1024,7 @@ static int helloworld_platform_probe(struct platform_device *pdev)
 	/* 在/sys/class/helloworld/helloworld/目录下创建hello_queue_work属性，也就是文件节点 */
 	ret = device_create_file(data->hello_device, &dev_attr_hello_queue_work);
 	if (ret < 0) {
-	    pr_err("Failed to create attribute hello_queue_work!\n");
+		pr_err("Failed to create attribute hello_queue_work!\n");
 	} else {
 		pr_info("%s: line %d: Device create hello_queue_work file success!\n", __func__, __LINE__);
 	}
@@ -1032,7 +1032,7 @@ static int helloworld_platform_probe(struct platform_device *pdev)
 	/* 在/sys/class/helloworld/helloworld/目录下创建hello_queue_delayed_work属性，也就是文件节点 */
 	ret = device_create_file(data->hello_device, &dev_attr_hello_queue_delayed_work);
 	if (ret < 0) {
-	    pr_err("Failed to create attribute hello_queue_delayed_work!\n");
+		pr_err("Failed to create attribute hello_queue_delayed_work!\n");
 	} else {
 		pr_info("%s: line %d: Device create hello_queue_delayed_work file success!\n", __func__, __LINE__);
 	}
@@ -1040,7 +1040,7 @@ static int helloworld_platform_probe(struct platform_device *pdev)
 	/* 在/sys/class/helloworld/helloworld/目录下创建hello_hrtimer属性，也就是文件节点 */
 	ret = device_create_file(data->hello_device, &dev_attr_hello_hrtimer);
 	if (ret < 0) {
-	    pr_err("Failed to create attribute hello_hrtimer!\n");
+		pr_err("Failed to create attribute hello_hrtimer!\n");
 	} else {
 		pr_info("%s: line %d: Device create hello_hrtimer file success!\n", __func__, __LINE__);
 	}
@@ -1048,7 +1048,7 @@ static int helloworld_platform_probe(struct platform_device *pdev)
 	/* 在/sys/class/helloworld/helloworld/目录下创建hello_hrtimer属性，也就是文件节点 */
 	ret = device_create_file(data->hello_device, &dev_attr_hello_hrtimer);
 	if (ret < 0) {
-	    pr_err("Failed to create attribute hello_hrtimer!\n");
+		pr_err("Failed to create attribute hello_hrtimer!\n");
 	} else {
 		pr_info("%s: line %d: Device create hello_hrtimer file success!\n", __func__, __LINE__);
 	}
@@ -1056,7 +1056,7 @@ static int helloworld_platform_probe(struct platform_device *pdev)
 	/* 在/sys/class/helloworld/helloworld/目录下创建hello_notifier_demo_event属性，也就是文件节点 */
 	ret = device_create_file(data->hello_device, &dev_attr_hello_notifier_demo_event);
 	if (ret < 0) {
-	    pr_err("Failed to create attribute hello_notifier_demo_event!\n");
+		pr_err("Failed to create attribute hello_notifier_demo_event!\n");
 	} else {
 		pr_info("%s: line %d: Device create hello_notifier_demo_event file success!\n", __func__, __LINE__);
 	}
@@ -1069,7 +1069,7 @@ static int helloworld_platform_probe(struct platform_device *pdev)
 
 		ret = device_create_file(&pdev->dev, &dev_attr_hello_pl);
 		if(ret < 0) {
-		    pr_err("Failed to create attribute hello_pl!\n");
+			pr_err("Failed to create attribute hello_pl!\n");
 		} else {
 			pr_info("%s: line %d: Device create hello_pl file for device of platform device success!\n", __func__, __LINE__);
 		}
