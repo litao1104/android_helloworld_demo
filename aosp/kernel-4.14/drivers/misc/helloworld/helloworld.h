@@ -75,6 +75,10 @@ struct helloworld_data {
 	int is_hello_mutex_manual_locked; //用于标记是否已经被手动上互斥锁
 	int hello_kitty; //用于/sys/class/helloworld/helloworld/hello_kitty读写实践，其他一些实践也用到此成员变量。
 	int hello_pl;    //用于/sys/devices/platform/helloworld/hello_pl读写实践，还有一个路径/sys/bus/platform/devices/helloworld/hello_pl
+
+	/* 以下是对于HAL层接口的状态标志 */
+	bool initialized;
+	bool enabled;
 };
 
 extern int hello_register_client(struct notifier_block *nb);

@@ -876,6 +876,194 @@ int hello_demo_notifier_callback(struct notifier_block *nb, unsigned long event,
 	return 0;
 }
 
+static int hello_world_device_init(struct helloworld_data *data)
+{
+	pr_info("%s: line %d: start to initialize helloworld device\n", __func__, __LINE__);
+
+	return 0;
+}
+
+static int hello_world_device_enable(struct helloworld_data *data, bool en)
+{
+	if (en) {
+		pr_info("%s: line %d: start to enable helloworld device\n", __func__, __LINE__);
+	} else {
+		pr_info("%s: line %d: start to disable helloworld device\n", __func__, __LINE__);
+	}
+
+	return 0;
+}
+
+/* 此函数的地址将赋值到device_attribute结构体变量的show函数指针，函数名不一定非要带show字样 */
+static ssize_t hello_init_show(struct device* dev, struct device_attribute* attr, char* buf)
+{
+	struct helloworld_data *data = dev_get_drvdata(dev);
+
+	pr_info("%s: line %d\n", __func__, __LINE__);
+
+	if (data == NULL) {
+		pr_err("%s: line %d: NULL pointer error!\n", __func__, __LINE__);
+		return -EFAULT;
+	}
+
+	mutex_lock(&data->hello_mutex_lock);
+
+	pr_info("%s: line %d: initialized = %d\n", __func__, __LINE__, data->initialized);
+
+	mutex_unlock(&data->hello_mutex_lock);
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data->initialized);
+}
+
+/* 此函数的地址将赋值到device_attribute结构体变量的store函数指针，函数名不一定非要带store字样 */
+static ssize_t hello_init_store(struct device* dev, struct device_attribute* attr, const char* buf, size_t count)
+{
+	struct helloworld_data *data = dev_get_drvdata(dev);
+	int val;
+	int ret;
+
+	pr_info("%s: line %d\n", __func__, __LINE__);
+
+	if (data == NULL) {
+		pr_err("%s: line %d: NULL pointer error!\n", __func__, __LINE__);
+		return -EFAULT;
+	}
+
+	mutex_lock(&data->hello_mutex_lock);
+
+	if (kstrtos32(buf, 10, &val) == 0) {
+		pr_info("%s: line %d: val = %d\n", __func__, __LINE__, val);
+	} else {
+		pr_err("invalid format = '%s'\n", buf);
+	}
+
+	if (val != 1) {
+		pr_err("%s: line %d: invalid value!\n", __func__, __LINE__);
+		mutex_unlock(&data->hello_mutex_lock);
+		return -EFAULT;
+	}
+
+	if (data->initialized == false) {
+		ret = hello_world_device_init(data);
+		if (ret) {
+			pr_err("%s: line %d: device init failed!\n", __func__, __LINE__);
+
+			mutex_unlock(&data->hello_mutex_lock);
+			return -EFAULT;
+		}
+
+		data->initialized = true;
+	} else {
+		pr_warn("%s: line %d: device already initialized!\n", __func__, __LINE__);
+	}
+
+	mutex_unlock(&data->hello_mutex_lock);
+
+	return count;
+}
+
+/*
+ * 实际上，DEVICE_ATTR的作用就是定义了一个struct device_attribute结构体变量 dev_attr_hello_init,
+ * 并且将hello_init_show函数地址和hello_init_store函数地址给
+ * dev_attr_hello_init结构体变量的函数指针成员赋值
+ *
+ * 此属性文件节点是helloworld HAL层的设备初始化接口。
+ */
+static DEVICE_ATTR(hello_init, S_IRUGO | S_IWUSR, hello_init_show, hello_init_store);
+
+/* 此函数的地址将赋值到device_attribute结构体变量的show函数指针，函数名不一定非要带show字样 */
+static ssize_t hello_enable_show(struct device* dev, struct device_attribute* attr, char* buf)
+{
+	struct helloworld_data *data = dev_get_drvdata(dev);
+
+	pr_info("%s: line %d\n", __func__, __LINE__);
+
+	if (data == NULL) {
+		pr_err("%s: line %d: NULL pointer error!\n", __func__, __LINE__);
+		return -EFAULT;
+	}
+
+	mutex_lock(&data->hello_mutex_lock);
+
+	pr_info("%s: line %d: enabled = %d\n", __func__, __LINE__, data->enabled);
+
+	mutex_unlock(&data->hello_mutex_lock);
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", data->enabled);
+}
+
+/* 此函数的地址将赋值到device_attribute结构体变量的store函数指针，函数名不一定非要带store字样 */
+static ssize_t hello_enable_store(struct device* dev, struct device_attribute* attr, const char* buf, size_t count)
+{
+	struct helloworld_data *data = dev_get_drvdata(dev);
+	int en;
+	int ret;
+
+	pr_info("%s: line %d\n", __func__, __LINE__);
+
+	if (data == NULL) {
+		pr_err("%s: line %d: NULL pointer error!\n", __func__, __LINE__);
+		return -EFAULT;
+	}
+
+	mutex_lock(&data->hello_mutex_lock);
+
+	if (kstrtos32(buf, 10, &en) == 0) {
+		pr_info("%s: line %d: val = %d\n", __func__, __LINE__, en);
+	} else {
+		pr_err("invalid format = '%s'\n", buf);
+	}
+
+	if ((en != 0) && (en != 1)) {
+		pr_err("%s: line %d: invalid value!\n", __func__, __LINE__);
+		mutex_unlock(&data->hello_mutex_lock);
+		return -EFAULT;
+	}
+
+	if (en) {
+		if (data->enabled == false) {
+			ret = hello_world_device_enable(data, true);
+			if (ret) {
+				pr_err("%s: line %d: device enable failed!\n", __func__, __LINE__);
+
+				mutex_unlock(&data->hello_mutex_lock);
+				return -EFAULT;
+			}
+
+			data->enabled = true;
+		} else {
+			pr_warn("%s: line %d: device already enabled!\n", __func__, __LINE__);
+		}
+	} else {
+		if (data->enabled == true) {
+			ret = hello_world_device_enable(data, false);
+			if (ret) {
+				pr_err("%s: line %d: device disable failed!\n", __func__, __LINE__);
+
+				mutex_unlock(&data->hello_mutex_lock);
+				return -EFAULT;
+			}
+
+			data->enabled = false;
+		} else {
+			pr_warn("%s: line %d: device already disabled!\n", __func__, __LINE__);
+		}
+	}
+
+	mutex_unlock(&data->hello_mutex_lock);
+
+	return count;
+}
+
+/*
+ * 实际上，DEVICE_ATTR的作用就是定义了一个struct device_attribute结构体变量 dev_attr_hello_enable,
+ * 并且将hello_enable_show函数地址和hello_enable_store函数地址给
+ * dev_attr_hello_enable结构体变量的函数指针成员赋值
+ *
+ * 此属性文件节点是helloworld HAL层的设备使能接口。
+ */
+static DEVICE_ATTR(hello_enable, S_IRUGO | S_IWUSR, hello_enable_show, hello_enable_store);
+
 /*
  * 定义一个platform_device全局变量，
  * 然后在helloworld_init函数中调用platform_device_register向内核注册
@@ -1068,6 +1256,22 @@ static int helloworld_platform_probe(struct platform_device *pdev)
 		pr_err("Failed to create attribute hello_notifier_demo_event!\n");
 	} else {
 		pr_info("%s: line %d: Device create hello_notifier_demo_event file success!\n", __func__, __LINE__);
+	}
+
+	/* 在/sys/class/helloworld/helloworld/目录下创建hello_init属性，也就是文件节点 */
+	ret = device_create_file(data->hello_device, &dev_attr_hello_init);
+	if (ret < 0) {
+		pr_err("Failed to create attribute hello_init!\n");
+	} else {
+		pr_info("%s: line %d: Device create hello_init file success!\n", __func__, __LINE__);
+	}
+
+	/* 在/sys/class/helloworld/helloworld/目录下创建hello_enable属性，也就是文件节点 */
+	ret = device_create_file(data->hello_device, &dev_attr_hello_enable);
+	if (ret < 0) {
+		pr_err("Failed to create attribute hello_enable!\n");
+	} else {
+		pr_info("%s: line %d: Device create hello_enable file success!\n", __func__, __LINE__);
 	}
 
 	/* 下面是在/sys/bus/platform/helloworld/目录下创建hello_pl属性 */
